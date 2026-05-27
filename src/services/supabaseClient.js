@@ -38,10 +38,15 @@ export async function fetchSupabase(endpoint, options = {}) {
     // 7. Se parsea la respuesta a JSON
     const data = await response.json();
 
+    // console.log("Respuesta completa de Supabase:", data);
+
     // 8. Si el estado HTTP no es un 2xx (éxito), se lanza un error
+    // console.log("HTTP STATUS:", response.status);
+
     if (!response.ok) {
       throw new Error(
         data.message ||
+          data.msg ||
           data.error ||
           data.error_description ||
           "Error en la API de Supabase",

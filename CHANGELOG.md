@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [Unreleased]
+## [0.3.0] - 2026-05-27
+
+### Added
+
+- Supabase REST API client service
+- Authentication service with signUp, signIn and signOut
+- JWT session persistence using localStorage
+- Automatic Authorization and API headers handling
+- Centralized API error handling
+
+### Changed
+
+- Improved fetch service with dynamic headers and FormData support
+- Enhanced authentication flow and session management
 
 ## [0.2.0] - 2026-05-27
 
