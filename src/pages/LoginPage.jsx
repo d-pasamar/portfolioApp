@@ -1,65 +1,39 @@
-import { signIn, signUp, signOut } from "../services/auth";
+// import { signIn, signUp, signOut } from "../services/auth";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function LoginPage() {
-  /*
-  const handleSignup = async () => {
-    try {
-      await signUp(
-        "David DAM",
-        "david.pasamar@gmail.com",
-        "Password123!",
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }; */
-
-  const handleLogin = async () => {
-    try {
-      const data = await signIn("david.pasamar@gmail.com", "Password123!");
-
-      console.log("Login correcto:", data);
-    } catch (error) {
-      console.error("Error login:", error.message);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-
-      console.log("Sesión cerrada correctamente");
-    } catch (error) {
-      console.error("Error logout:", error.message);
-    }
-  };
+  // Extraemos lo necesario del contexto global
+  const { user, isAuthenticated, login, logout } = useContext(AuthContext);
 
   return (
     <div className="p-8">
       <h2>Página de Login (Pública)</h2>
+      <p className="mt-2 text-sm text-slate-600">
+        ¿Usuario autenticado globalmente?:{" "}
+        <strong>{isAuthenticated ? "SÍ" : "NO"}</strong>
+      </p>
+      {isAuthenticated && (
+        <p className="mt-1 text-sm text-green-600">
+          Bienvenido de nuevo, <strong>{user?.name}</strong> (Rol: {user?.role})
+        </p>
+      )}
 
-      {/* 
-      <button
-        onClick={handleSignup}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Crear usuario
-      </button>
-      */}
+      <div className="mt-4 flex gap-2">
+        <button
+          onClick={() => login("david.pasamar@gmail.com", "Password123!")}
+          className="rounded bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+        >
+          Login
+        </button>
 
-      <button
-        onClick={handleLogin}
-        className="bg-green-600 text-white px-4 py-2 rounded"
-      >
-        Iniciar sesión
-      </button>
-
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded"
-      >
-        Cerrar sesión
-      </button>
+        <button
+          onClick={logout}
+          className="rounded bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
