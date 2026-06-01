@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [unreleased]
+
+### Added
+
+- Global authentication state management using React Context API
+- AuthProvider component for application-wide session handling
+- Initial loading state during session verification
+
+### Changed
+
+- Improved authentication architecture with centralized auth context
+
 ## [0.3.0] - 2026-05-27
 
 ### Added

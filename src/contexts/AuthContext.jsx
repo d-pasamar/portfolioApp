@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { signIn, signUp, signOut } from "../services/auth";
 import { fetchSupabase } from "../services/supabaseClient";
 
@@ -104,4 +104,20 @@ export function AuthProvider({ children }) {
       )}
     </AuthContext.Provider>
   );
+}
+
+/**
+ * Hook personalizado para consumir el contexto de autenticación de forma simplificada.
+ * @returns {Object} - Todos los datos y métodos del AuthContext
+ */
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  // Si intentamos usar useAuth() en un componente que está fuera del <AuthProvider>,
+  // avisará con un error claro en lugar de dar un "undifined".
+  if (!context) {
+    throw new Error("useAuth debe ser utilizado dentro de un AuthProvider");
+  }
+
+  return context;
 }

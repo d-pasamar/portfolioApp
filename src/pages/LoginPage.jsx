@@ -1,10 +1,10 @@
 // import { signIn, signUp, signOut } from "../services/auth";
-import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   // Extraemos lo necesario del contexto global
-  const { user, isAuthenticated, login, logout } = useContext(AuthContext);
+  const { user, isAuthenticated, login, logout } = useAuth();
 
   return (
     <div className="p-8">
