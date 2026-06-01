@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "../components/ProtectedRoute";
+
+// Importación de Páginas
 import DashboardPage from "../pages/DashboardPage";
 import LoginPage from "../pages/LoginPage";
 import MarketSearchPage from "../pages/MarketSearchPage";
@@ -16,11 +19,46 @@ export default function AppRouter() {
         <Route path="/register" element={<RegisterPage />} />
 
         {/* Rutas Privadas */}
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/portfolios" element={<PortfoliosPage />} />
-        <Route path="/portfolios/:id" element={<PortfolioDetailPage />} />
-        <Route path="/market" element={<MarketSearchPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/portfolios"
+          element={
+            <ProtectedRoute>
+              <PortfoliosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/portfolios/:id"
+          element={
+            <ProtectedRoute>
+              <PortfolioDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/market"
+          element={
+            <ProtectedRoute>
+              <MarketSearchPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Redirección por defecto */}
         <Route path="*" element={<Navigate to="/login" replace />} />
