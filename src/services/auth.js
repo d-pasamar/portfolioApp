@@ -15,24 +15,21 @@ export async function signUp(name, email, password) {
       body: JSON.stringify({ email, password }),
     });
 
-    // Se extrae el ID real del usuario desde el objeto 'user'
+    // Se extrae el ID real del usuario desde el objeto 'user' (uso de fallaback)
     const userId = authData?.user?.id || authData?.id;
 
     if (!userId) {
       throw new Error("No se pudo obtener un ID de usuario válido");
     }
 
-    console.log(
-      "¡Paso 1 completado! Usuario creado en Auth con ID:",
-      authData.id,
-    );
+    console.log("¡Paso 1 completado! Usuario creado en Auth con ID:", userId);
 
     // 2. Se inserta el perfil en la tabla 'public.users'
     // El rol por defecto es 'user'
     const userProfile = await fetchSupabase("/rest/v1/users", {
       method: "POST",
       body: JSON.stringify({
-        id: authData.id,
+        id: userId,
         name: name,
         email: email,
         role: "user",
