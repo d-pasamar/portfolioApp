@@ -1,3 +1,4 @@
+import { Outlet, NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Layout() {
@@ -57,7 +58,7 @@ export default function Layout() {
           )}
 
           <button
-            onClick={logouot}
+            onClick={logout}
             className="border border-slate-400 bg-white px-3 py-1.5 text-xs font-medium tracking-wider uppercase transition-colors duration-150 hover:bg-black hover:text-white"
           >
             Cerrar sesión
