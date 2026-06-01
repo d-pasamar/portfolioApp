@@ -5,17 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [unreleased]
+## [0.4.0] - 2026-06-01
 
 ### Added
 
 - Global authentication state management using React Context API
 - AuthProvider component for application-wide session handling
 - Initial loading state during session verification
+- ProtectedRoute component for route access control
+- Register page structure and initial form layout
+- Login page structure and initial form layout
 
 ### Changed
 
 - Improved authentication architecture with centralized auth context
+- Updated routing configuration to support authenticated and unanthenticated access
 
 ## [0.3.0] - 2026-05-27
 

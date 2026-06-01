@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -13,8 +13,15 @@ export default function RegisterPage() {
   const [errorMsg, setErrorMsg] = useState(""); // Se guarda el texto del error por si algo falla
   const [isSubmitting, setIsSubmitting] = useState(false); // true bloquea el botón para evitar dobles clics
 
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const navigate = useNavigate();
+
+  // Si ya hay sesión iniciada, redirige a Dashboard (efecto anti-rebote)
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   // 3. Función handler del envío del formulario
   async function handleSubmit(e) {
