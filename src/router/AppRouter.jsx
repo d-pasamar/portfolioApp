@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Layout from "../components/common/Layout";
 
 // Importación de Páginas
 import DashboardPage from "../pages/DashboardPage";
@@ -18,47 +19,21 @@ export default function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Rutas Privadas */}
+        {/* Rutas Privadas - Bajo el mismo Layout */}
         <Route
-          path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <Layout />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/portfolios"
-          element={
-            <ProtectedRoute>
-              <PortfoliosPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/portfolios/:id"
-          element={
-            <ProtectedRoute>
-              <PortfolioDetailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/market"
-          element={
-            <ProtectedRoute>
-              <MarketSearchPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
+        >
+          {/* Todas estas subrutas se renderizan dentro del <Outlet /> del Layout */}
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/portfolios" element={<PortfoliosPage />} />
+          <Route path="/portfolios/:id" element={<PortfolioDetailPage />} />
+          <Route path="/market" element={<MarketSearchPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
 
         {/* Redirección por defecto */}
         <Route path="*" element={<Navigate to="/login" replace />} />
