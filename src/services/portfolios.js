@@ -44,11 +44,11 @@ export async function updatePortfolioName(portfolioId, newName) {
 
 /**
  * 4. ELIMINAR UN PORTFOLIO
- * Endpoint Supabase: DELETE /rest/v1/portfolios?id=eq.{portfoliosId}
+ * Endpoint Supabase: DELETE /rest/v1/portfolios?id=eq.{portfolioId}
  * Borrado en cascada
  */
 export async function deletePortfolio(portfolioId) {
-  return await fetchSupabase(`/rest/v1/portfolios?id=eq.{portfoliosId}`, {
+  return await fetchSupabase(`/rest/v1/portfolios?id=eq.{portfolioId}`, {
     method: "DELETE",
   });
 }
