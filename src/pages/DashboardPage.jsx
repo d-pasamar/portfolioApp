@@ -1,104 +1,16 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { getPortfoliosByUser } from "../services/portfolios";
-import { getAssetsByPortfolio } from "../services/assets";
+import { useDashboardData } from "../hooks/useDashboardData";
+import { formatEUR, formatDateShort } from "../utils/format";
 import StatCard from "../components/common/StatCard";
-import DashboardTableRow from "../components/common/DashboardTableRow";
+import DashboardTableRow from "../components/dashboard/DashboardTableRow";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Estados para controlar los datos de la base de datos
-  const [portfolios, setPortfolios] = useState([]);
-  const [globalStats, setGlobalStats] = useState({
-    totalAssetsCount: 0,
-    totalValue: 0,
-  });
-  const [portfolioMetricsMap, setPortfolioMetricsMap] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  // Fecha real
-  const currentDate = new Date().toLocaleDateString("es-ES", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-  // --- HELPER ---
-  const formatEUR = (num) =>
-    num.toLocaleString("es-ES", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-
-  useEffect(() => {
-    async function loadDashboardData() {
-      if (!user?.id) return;
-
-      try {
-        setIsLoading(true);
-        setErrorMsg("");
-
-        // 1. Petición a Supabase
-        const portfoliosData = await getPortfoliosByUser(user.id);
-        setPortfolios(portfoliosData);
-
-        // ---PETICIONES EN PARALELO CON PROMISE.ALL ---
-        const assetsPromises = portfoliosData.map((p) =>
-          getAssetsByPortfolio(p.id),
-        );
-        const allPortfoliosAssets = await Promise.all(assetsPromises);
-
-        // 2. Para cada cartera, se traen los activos en paralelo
-        let accumulatedAssetsCount = 0;
-        let accumulatedTotalValue = 0;
-        const metricsMap = {};
-
-        portfoliosData.forEach((portfolio, index) => {
-          const assetsData = allPortfoliosAssets[index] || [];
-
-          // Calcular totales individuales de esta cartera concreta
-          let portfolioValue = 0;
-          let portfolioAssetsCount = assetsData.length;
-
-          assetsData.forEach((asset) => {
-            // Si es un activo comprado (quantity > 0), sumamos su valor de mercado actual
-            if (asset.quantity > 0) {
-              portfolioValue +=
-                asset.quantity * (parseFloat(asset.last_value) || 0);
-            }
-          });
-
-          // Guardamos las métricas calculadas asociadas al ID de la cartera
-          metricsMap[portfolio.id] = {
-            count: portfolioAssetsCount,
-            value: portfolioValue,
-          };
-
-          // Sumamos al acumulado global de las tarjetas superiores
-          accumulatedAssetsCount += portfolioAssetsCount;
-          accumulatedTotalValue += portfolioValue;
-        });
-
-        // Guardamos los mapas de datos en los estados
-        setPortfolioMetricsMap(metricsMap);
-        setGlobalStats({
-          totalAssetsCount: accumulatedAssetsCount,
-          totalValue: accumulatedTotalValue,
-        });
-      } catch (err) {
-        console.error("Error al cargar los datos del dashboard:", err);
-        setErrorMsg("No se pudieron cargar tus carteras.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadDashboardData();
-  }, [user?.id]);
+  const { portfolios, globalStats, portfolioMetricsMap, isLoading, errorMsg } =
+    useDashboardData(user?.id);
 
   return (
     <div className="space-y-10 font-mono select-none animate-fadeIn">
@@ -108,7 +20,7 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <span className="text-xs text-slate-400 tracking-wider uppercase">
-          {currentDate}
+          {formatDateShort()}
         </span>
       </div>
 

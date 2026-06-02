@@ -1,9 +1,4 @@
-// --- HELPER ---
-const formatEUR = (num) =>
-  num.toLocaleString("es-ES", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+import { formatEUR } from "../../utils/format";
 
 export default function DashboardTableRow({ portfolio, metrics, onNavigate }) {
   const { count = 0, value = 0 } = metrics || {};

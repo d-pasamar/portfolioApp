@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [unreleased]
+
+### Added
+
+- Created `useDashboardData` custom hook to encapsulate Supabase queries and financial logic
+- Created centralized `format.js` utility file for global currency and date formatting
+
+### Changed
+
+- Refactored `DashboardPage` into a lightweight, purely declarative presentation component
+- Decoupled table row rendering into an independent `DashboardTableRow` component
+
 ## [0.7.0] - 2026-06-02
 
 ### Added
