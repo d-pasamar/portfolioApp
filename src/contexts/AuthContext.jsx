@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { signIn, signUp, signOut } from "../services/auth";
 import { fetchSupabase } from "../services/supabaseClient";
+import { createPortfolio } from "../services/portfolios";
 
 // 1. Se crea el contexto, comparte información entre componentes.
 export const AuthContext = createContext(null);
@@ -61,9 +62,32 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Función handler para Registro
+  // --- HANDLER para REGISTRO ---
   async function registerHandler(name, email, password) {
+    // 1. Ejecución de registro base en Auth y la inserción en public.users
     const result = await signUp(name, email, password);
+
+    // 2. Se extrae el ID del usuario creado
+    const profileData = Array.isArray(result.profile)
+      ? result.profile[0]
+      : result.profile;
+    const userId = profileData?.id;
+
+    if (userId) {
+      try {
+        console.log(
+          "AuthContext: Creando portfolio automático por defecto para el usuario...",
+        );
+        // 3. Se crea la cartera incial sin assets asociados
+        await createPortfolio(userId, "Mi Primer Portafolio");
+      } catch (error) {
+        console.error(
+          "AuthContext: No se pudo generar el portafolio por defecto:",
+          error.message,
+        );
+      }
+    }
+
     return result;
   }
 

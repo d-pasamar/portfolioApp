@@ -1,7 +1,14 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { getPortfoliosByUser } from "../services/portfolios";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+
+  // Estados para controlar los datos de la base de datos
+  const [portfolios, setPortfolios] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   // Fecha real
   const currentDate = new Date().toLocaleDateString("es-ES", {
@@ -16,6 +23,27 @@ export default function DashboardPage() {
     totalAssets: 23,
     totalValue: "$ 142.800",
   };
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      if (!user?.id) return;
+
+      try {
+        setIsLoading(true);
+        setErrorMsg("");
+
+        // Petición a Supabase
+        const data = await getPortfoliosByUser(user.id);
+        setPortfolios(data);
+      } catch (err) {
+        console.error("Error al cargar los datos del dashboard:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadDashboardData();
+  }, [user]);
 
   const mockPortfolios = [
     {
@@ -69,7 +97,10 @@ export default function DashboardPage() {
             Portfolios
           </span>
           <span className="block text-4xl font-medium text-black mt-4">
+            {/* Temporal eliminación 
             {mockStats.portfoliosCount}
+            */}
+            {isLoading ? "..." : portfolios.length}
           </span>
           <span className="block text-[10px] text-slate-500 mt-1 uppercase tracking-wider">
             activos
@@ -77,6 +108,7 @@ export default function DashboardPage() {
         </div>
 
         {/* TARJETA 2: TOTAL ACTIVOS */}
+        {/* temporal por el momento */}
         <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative">
           <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -91,6 +123,7 @@ export default function DashboardPage() {
         </div>
 
         {/* TARJETA 3: VALOR TOTAL */}
+        {/* temporal por el momento */}
         <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative">
           <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -112,52 +145,70 @@ export default function DashboardPage() {
           <h2>Últimas actualizaciones</h2>
         </div>
 
+        {/* Muestra errores si falla la API */}
+        {errorMsg && (
+          <div className="rounded border border-red-200 bg-red-50 p-4 text-xs text-red-600">
+            {errorMsg}
+          </div>
+        )}
+
         <div className="border border-slate-300 bg-[#f9f9f9] overflow-hidden shadow-sm">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-slate-300 bg-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
-                <th className="p-4 font-bold tracking-wider">Portfolio</th>
-                <th className="p-4 font-bold tracking-wider">
-                  Últ. Actualización
-                </th>
-                <th className="p-4 font-bold tracking-wider text-center">
-                  Activos
-                </th>
-                <th className="p-4 font-bold tracking-wider text-right">
-                  Valor Total
-                </th>
-                <th className="p-4 font-bold tracking-wider text-center">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 bg-[#f9f9f9]">
-              {mockPortfolios.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-slate-100/70 transition-colors"
-                >
-                  <td className="p-4 font-bold text-black tracking-wide">
-                    {item.name}
-                  </td>
-                  <td className="p-4 text-slate-600 font-mono">
-                    {item.lastSync}
-                  </td>
-                  <td className="p-4 text-center text-slate-600 font-medium">
-                    {item.assetsCount}
-                  </td>
-                  <td className="p-4 text-right font-bold text-black">
-                    {item.totalValue}
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="border border-slate-300 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors duration-150 hover:bg-black hover:text-white cursor-pointer">
-                      Ver →
-                    </button>
-                  </td>
+          {isLoading ? (
+            <div className="p-8 text-center text-xs text-slate-500">
+              Cargando carteras...
+            </div>
+          ) : portfolios.length === 0 ? (
+            <div className="p-12 text-center text-xs text-slate-500 bg-white">
+              No hay carteras creadas todavía. Ve a la sección de Portfolios
+              para empezar.
+            </div>
+          ) : (
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-300 bg-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
+                  <th className="p-4 font-bold tracking-wider">Portfolio</th>
+                  <th className="p-4 font-bold tracking-wider">
+                    Últ. Actualización
+                  </th>
+                  <th className="p-4 font-bold tracking-wider text-center">
+                    Activos
+                  </th>
+                  <th className="p-4 font-bold tracking-wider text-right">
+                    Valor Total
+                  </th>
+                  <th className="p-4 font-bold tracking-wider text-center">
+                    Acciones
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-[#f9f9f9]">
+                {mockPortfolios.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-slate-100/70 transition-colors"
+                  >
+                    <td className="p-4 font-bold text-black tracking-wide">
+                      {item.name}
+                    </td>
+                    <td className="p-4 text-slate-600 font-mono">
+                      {item.lastSync}
+                    </td>
+                    <td className="p-4 text-center text-slate-600 font-medium">
+                      {item.assetsCount}
+                    </td>
+                    <td className="p-4 text-right font-bold text-black">
+                      {item.totalValue}
+                    </td>
+                    <td className="p-4 text-center">
+                      <button className="border border-slate-300 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors duration-150 hover:bg-black hover:text-white cursor-pointer">
+                        Ver →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -9,7 +9,16 @@ and this project follows Semantic Versioning.
 
 ### Added
 
+- Dashboard page visual mockup based on the approved Figma design
+- Portfolio service with native Supabase REST API CRUD operations
+- Automatic default portfolio creation during user registration
+- Initial portfolio management integration in the dashboard
+
 ### Changed
+
+- Connected dashboard data layer to the portfolio service
+- Enhanced registration flow with automatic portfolio provisioning
+- Updated dashboard to load user portfolio data from the backend
 
 ## [0.5.0] - 2026-06-01
 
