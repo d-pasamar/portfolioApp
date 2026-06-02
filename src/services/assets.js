@@ -7,7 +7,7 @@ import { fetchSupabase } from "./supabaseClient";
 export async function getAssetsByPortfolio(portfolioId) {
   if (!portfolioId) return [];
   return await fetchSupabase(
-    `/rest/v1/assets?portfolio_id=eq.{portfolioId}&select=*`,
+    `/rest/v1/assets?portfolio_id=eq.${portfolioId}&select=*`,
     {
       method: "GET",
     },
@@ -32,7 +32,7 @@ export async function addAssetToPortfolio(portfolioId, asset) {
     notes: asset.notes || "",
     // Si viene vacío es un valor de seguimiento -> valor 0 por defecto
     buy_price: asset.buy_price !== undefined ? parseFloat(asset.buy_price) : 0,
-    
+
     last_value: parseFloat(asset.last_value) || 0,
     change: parseFloat(asset.change) || 0,
     change_p: parseFloat(asset.change_p) || 0,

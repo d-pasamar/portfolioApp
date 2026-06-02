@@ -1,13 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getPortfoliosByUser } from "../services/portfolios";
+import { getAssetsByPortfolio } from "../services/assets";
 import StatCard from "../components/common/StatCard";
+import DashboardTableRow from "../components/common/DashboardTableRow";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Estados para controlar los datos de la base de datos
   const [portfolios, setPortfolios] = useState([]);
+  const [globalStats, setGlobalStats] = useState({
+    totalAssetsCount: 0,
+    totalValue: 0,
+  });
+  const [portfolioMetricsMap, setPortfolioMetricsMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -18,12 +27,12 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
-  // DATOS MOCK
-  const mockStats = {
-    portfoliosCount: 4,
-    totalAssets: 23,
-    totalValue: "$ 142.800",
-  };
+  // --- HELPER ---
+  const formatEUR = (num) =>
+    num.toLocaleString("es-ES", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -33,9 +42,53 @@ export default function DashboardPage() {
         setIsLoading(true);
         setErrorMsg("");
 
-        // Petición a Supabase
-        const data = await getPortfoliosByUser(user.id);
-        setPortfolios(data);
+        // 1. Petición a Supabase
+        const portfoliosData = await getPortfoliosByUser(user.id);
+        setPortfolios(portfoliosData);
+
+        // ---PETICIONES EN PARALELO CON PROMISE.ALL ---
+        const assetsPromises = portfoliosData.map((p) =>
+          getAssetsByPortfolio(p.id),
+        );
+        const allPortfoliosAssets = await Promise.all(assetsPromises);
+
+        // 2. Para cada cartera, se traen los activos en paralelo
+        let accumulatedAssetsCount = 0;
+        let accumulatedTotalValue = 0;
+        const metricsMap = {};
+
+        portfoliosData.forEach((portfolio, index) => {
+          const assetsData = allPortfoliosAssets[index] || [];
+
+          // Calcular totales individuales de esta cartera concreta
+          let portfolioValue = 0;
+          let portfolioAssetsCount = assetsData.length;
+
+          assetsData.forEach((asset) => {
+            // Si es un activo comprado (quantity > 0), sumamos su valor de mercado actual
+            if (asset.quantity > 0) {
+              portfolioValue +=
+                asset.quantity * (parseFloat(asset.last_value) || 0);
+            }
+          });
+
+          // Guardamos las métricas calculadas asociadas al ID de la cartera
+          metricsMap[portfolio.id] = {
+            count: portfolioAssetsCount,
+            value: portfolioValue,
+          };
+
+          // Sumamos al acumulado global de las tarjetas superiores
+          accumulatedAssetsCount += portfolioAssetsCount;
+          accumulatedTotalValue += portfolioValue;
+        });
+
+        // Guardamos los mapas de datos en los estados
+        setPortfolioMetricsMap(metricsMap);
+        setGlobalStats({
+          totalAssetsCount: accumulatedAssetsCount,
+          totalValue: accumulatedTotalValue,
+        });
       } catch (err) {
         console.error("Error al cargar los datos del dashboard:", err);
         setErrorMsg("No se pudieron cargar tus carteras.");
@@ -45,7 +98,7 @@ export default function DashboardPage() {
     }
 
     loadDashboardData();
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <div className="space-y-10 font-mono select-none animate-fadeIn">
@@ -69,14 +122,14 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Total Activos"
-          value={mockStats.totalAssets}
-          subtext="instrumentos"
+          value={globalStats.totalAssetsCount}
+          subtext="en seguimiento o propiedad"
           isLoading={isLoading}
         />
         <StatCard
           title="Valor Total"
-          value={mockStats.totalValue}
-          subtext="USD estimado"
+          value={`${formatEUR(globalStats.totalValue)} EUR`}
+          subtext="Capital estimado"
           isLoading={isLoading}
         />
       </div>
@@ -98,7 +151,7 @@ export default function DashboardPage() {
         <div className="border border-slate-300 bg-[#f9f9f9] overflow-hidden shadow-sm">
           {isLoading ? (
             <div className="p-8 text-center text-xs text-slate-500">
-              Cargando carteras...
+              Sincronizando hilos asíncronos en paralelo...
             </div>
           ) : portfolios.length === 0 ? (
             <div className="p-12 text-center text-xs text-slate-500 bg-white">
@@ -126,30 +179,12 @@ export default function DashboardPage() {
               </thead>
               <tbody className="divide-y divide-slate-200 bg-[#f9f9f9]">
                 {portfolios.map((item) => (
-                  <tr
+                  <DashboardTableRow
                     key={item.id}
-                    className="hover:bg-slate-100/70 transition-colors"
-                  >
-                    <td className="p-4 font-bold text-black tracking-wide">
-                      {item.name}
-                    </td>
-                    <td className="p-4 text-slate-600 font-mono">
-                      {item.created_at
-                        ? new Date(item.created_at).toLocaleDateString("es-ES")
-                        : "Sin datos"}
-                    </td>
-                    <td className="p-4 text-center text-slate-600 font-medium">
-                      {item.assetsCount}
-                    </td>
-                    <td className="p-4 text-right font-bold text-black">
-                      {item.totalValue}
-                    </td>
-                    <td className="p-4 text-center">
-                      <button className="border border-slate-300 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors duration-150 hover:bg-black hover:text-white cursor-pointer">
-                        Ver →
-                      </button>
-                    </td>
-                  </tr>
+                    portfolio={item}
+                    metrics={portfolioMetricsMap[item.id]}
+                    onNavigate={navigate}
+                  />
                 ))}
               </tbody>
             </table>

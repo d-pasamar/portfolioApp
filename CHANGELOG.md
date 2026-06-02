@@ -5,18 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [unreleased]
+## [0.7.0] - 2026-06-02
 
 ### Added
 
 - Assets service with native Supabase REST API CRUD operations
 - Portfolio management page with dedicated user interface
 - Native CRUD actions menu using a vertical dots dropdown pattern for portfolio management
+- Portfolio detail page featuring live financial metrics, cost basis, and conditional formatting (profit/loss)
+- Native support for a "Watchlist" mode (tracking assets with zero quantity/price without breaking financial formulas)
+- Isolated `DashboardTableRow` component in the common folder for better modularity
 
 ### Changed
 
 - Expanded application architecture to support asset management operations
 - Improved portfolio management experience with contextual action menus
+- Migrated database schema to natively include `buy_price` in the `assets` table
+- Updated assets service to map and handle the new `buy_price` field
 
 ## [0.6.0] - 2026-06-02
 
