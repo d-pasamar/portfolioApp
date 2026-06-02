@@ -30,6 +30,9 @@ export async function addAssetToPortfolio(portfolioId, asset) {
     country: asset.country || null,
     quantity: parseFloat(asset.quantity) || 0,
     notes: asset.notes || "",
+    // Si viene vacío es un valor de seguimiento -> valor 0 por defecto
+    buy_price: asset.buy_price !== undefined ? parseFloat(asset.buy_price) : 0,
+    
     last_value: parseFloat(asset.last_value) || 0,
     change: parseFloat(asset.change) || 0,
     change_p: parseFloat(asset.change_p) || 0,
