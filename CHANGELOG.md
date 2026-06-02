@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [unreleased]
+## [0.6.0] - 2026-06-02
 
 ### Added
 
@@ -13,6 +13,7 @@ and this project follows Semantic Versioning.
 - Portfolio service with native Supabase REST API CRUD operations
 - Automatic default portfolio creation during user registration
 - Initial portfolio management integration in the dashboard
+- Reusable `StatCard`component for dashboard metrics display
 
 ### Changed
 
@@ -34,6 +35,7 @@ and this project follows Semantic Versioning.
 - Updated router configuration to use the shared layout structure
 - Improved application navigation consistency across pages
 - Enhanced user experience in navigation interface
+- Refactored dashboard metrics section to use reusable StatCard components
 
 ## [0.4.0] - 2026-06-01
 

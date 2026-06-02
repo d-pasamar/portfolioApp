@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { getPortfoliosByUser } from "../services/portfolios";
+import StatCard from "../components/common/StatCard";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -37,6 +38,7 @@ export default function DashboardPage() {
         setPortfolios(data);
       } catch (err) {
         console.error("Error al cargar los datos del dashboard:", err);
+        setErrorMsg("No se pudieron cargar tus carteras.");
       } finally {
         setIsLoading(false);
       }
@@ -44,37 +46,6 @@ export default function DashboardPage() {
 
     loadDashboardData();
   }, [user]);
-
-  const mockPortfolios = [
-    {
-      id: 1,
-      name: "Tech Growth",
-      lastSync: "26 may 2026, 14:32",
-      assetsCount: 8,
-      totalValue: "$ 78.200",
-    },
-    {
-      id: 2,
-      name: "Value Fund",
-      lastSync: "25 may 2026, 09:15",
-      assetsCount: 7,
-      totalValue: "$ 41.600",
-    },
-    {
-      id: 3,
-      name: "LATAM Mix",
-      lastSync: "24 may 2026, 18:47",
-      assetsCount: 5,
-      totalValue: "$ 15.400",
-    },
-    {
-      id: 4,
-      name: "Commodities",
-      lastSync: "20 may 2026, 11:00",
-      assetsCount: 3,
-      totalValue: "$ 7.600",
-    },
-  ];
 
   return (
     <div className="space-y-10 font-mono select-none animate-fadeIn">
@@ -90,52 +61,24 @@ export default function DashboardPage() {
 
       {/* 1. FILA DE TARJETAS DE MÉTRICAS */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* TARJETA 1: PORTFOLIOS */}
-        <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative">
-          <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
-          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Portfolios
-          </span>
-          <span className="block text-4xl font-medium text-black mt-4">
-            {/* Temporal eliminación 
-            {mockStats.portfoliosCount}
-            */}
-            {isLoading ? "..." : portfolios.length}
-          </span>
-          <span className="block text-[10px] text-slate-500 mt-1 uppercase tracking-wider">
-            activos
-          </span>
-        </div>
-
-        {/* TARJETA 2: TOTAL ACTIVOS */}
-        {/* temporal por el momento */}
-        <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative">
-          <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
-          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Total Activos
-          </span>
-          <span className="block text-4xl font-medium text-black mt-4">
-            {mockStats.totalAssets}
-          </span>
-          <span className="block text-[10px] text-slate-500 mt-1 uppercase tracking-wider">
-            instrumentos
-          </span>
-        </div>
-
-        {/* TARJETA 3: VALOR TOTAL */}
-        {/* temporal por el momento */}
-        <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative">
-          <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
-          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Valor Total
-          </span>
-          <span className="block text-3xl font-bold text-black mt-4 tracking-tight">
-            {mockStats.totalValue}
-          </span>
-          <span className="block text-[10px] text-slate-500 mt-2 uppercase tracking-wider">
-            USD estimado
-          </span>
-        </div>
+        <StatCard
+          title="Portafolios"
+          value={portfolios.length}
+          subtext="activos"
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Total Activos"
+          value={mockStats.totalAssets}
+          subtext="instrumentos"
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Valor Total"
+          value={mockStats.totalValue}
+          subtext="USD estimado"
+          isLoading={isLoading}
+        />
       </div>
 
       {/* 2. SECCIÓN ÚLTIMAS ACTUALIZACIONES */}
@@ -159,7 +102,7 @@ export default function DashboardPage() {
             </div>
           ) : portfolios.length === 0 ? (
             <div className="p-12 text-center text-xs text-slate-500 bg-white">
-              No hay carteras creadas todavía. Ve a la sección de Portfolios
+              No hay carteras creadas todavía. Ve a la sección de Portafolios
               para empezar.
             </div>
           ) : (
@@ -182,7 +125,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-[#f9f9f9]">
-                {mockPortfolios.map((item) => (
+                {portfolios.map((item) => (
                   <tr
                     key={item.id}
                     className="hover:bg-slate-100/70 transition-colors"
@@ -191,7 +134,9 @@ export default function DashboardPage() {
                       {item.name}
                     </td>
                     <td className="p-4 text-slate-600 font-mono">
-                      {item.lastSync}
+                      {item.created_at
+                        ? new Date(item.created_at).toLocaleDateString("es-ES")
+                        : "Sin datos"}
                     </td>
                     <td className="p-4 text-center text-slate-600 font-medium">
                       {item.assetsCount}
