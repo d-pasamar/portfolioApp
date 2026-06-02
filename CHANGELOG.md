@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [unrelease]
+
+### Added
+
+- Shared application layout component (`Layout.jsx`)
+- Reussable navigation bar for authenticated sections
+- Dynamic navigation rendering based on authentication state
+- User profile display in navigation interface
+
+### Changed
+
+- Updated router configuration to use the shared layout structure
+- Improved application navigation consistency across pages
+- Enhanced user experience in navigation interface
+
 ## [0.4.0] - 2026-06-01
 
 ### Added
