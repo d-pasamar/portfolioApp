@@ -22,6 +22,9 @@ export async function getPortfoliosByUser(userId) {
 export async function createPortfolio(userId, name) {
   return await fetchSupabase("/rest/v1/portfolios", {
     method: "POST",
+    headers: {
+      Prefer: "return=representation",
+    },
     body: JSON.stringify({
       name: name,
       user_id: userId, // Columna relacional FK -> users.id
@@ -48,7 +51,7 @@ export async function updatePortfolioName(portfolioId, newName) {
  * Borrado en cascada
  */
 export async function deletePortfolio(portfolioId) {
-  return await fetchSupabase(`/rest/v1/portfolios?id=eq.{portfolioId}`, {
+  return await fetchSupabase(`/rest/v1/portfolios?id=eq.${portfolioId}`, {
     method: "DELETE",
   });
 }

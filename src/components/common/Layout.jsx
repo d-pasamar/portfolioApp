@@ -33,7 +33,7 @@ export default function Layout() {
             Dashboard
           </NavLink>
           <NavLink to="/portfolios" className={linkClass}>
-            Portfolios
+            Portafolios
           </NavLink>
           <NavLink to="/market" className={linkClass}>
             Market
