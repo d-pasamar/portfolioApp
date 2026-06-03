@@ -41,6 +41,9 @@ export async function addAssetToPortfolio(portfolioId, asset) {
 
   return await fetchSupabase("/rest/v1/assets", {
     method: "POST",
+    headers: {
+      Prefer: "return=representation",
+    },
     body: JSON.stringify(body),
   });
 }

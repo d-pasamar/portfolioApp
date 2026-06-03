@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [0.9.0] - 2026-06-03
+
+### Added
+
+- Created `eodhdClient.js` service with real-time pricing endpoint, 24h cache strategy, and API usage check
+- Created `assetsReference.js` service for local catalog search (users) and EODHD sync (admins)
+- Created `syncLog.js` service for sync audit trail (getLastSync, logSync)
+- Created `useMarketSearch` custom hook with debounced search, portfolio loading, and add-to-portfolio action
+- Created `MarketSearchPage` as declarative orchestrator consuming useMarketSearch hook
+- Created `MarketResultsTable` component for search results display with "+ Añadir" button per row
+- Created `AddAssetModal` component with portfolio selector, quantity, and buy price fields
+
+### Fixed
+
+- Fixed empty response error in `addAssetToPortfolio` by adding `Prefer: return=representation` header
+
 ## [0.8.0] - 2026-06-03
 
 ### Added
