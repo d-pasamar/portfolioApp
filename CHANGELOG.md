@@ -5,17 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [unreleased]
+## [0.8.0] - 2026-06-03
 
 ### Added
 
 - Created `useDashboardData` custom hook to encapsulate Supabase queries and financial logic
 - Created centralized `format.js` utility file for global currency and date formatting
+- Created `usePortfolioDetail` custom hook to isolate portfolio loading and financial metrics calculation
+- Created `useAssetsCRUD` custom hook for asset edit and delete operations with automatic list refresh
+- Created `AssetsTable` component for financial assets table rendering
+- Created `AssetRow` component with kebab menu (⋮) for inline edit and delete actions
+- Added "+ Añadir Activo" navigation button in portfolio detail header
 
 ### Changed
 
 - Refactored `DashboardPage` into a lightweight, purely declarative presentation component
 - Decoupled table row rendering into an independent `DashboardTableRow` component
+- Refactored `PortfolioDetailPage` into a declarative component consuming custom hooks and subcomponents
+- Replaced hardcoded metric cards in portfolio detail with reusable `StatCard` component
+- Replaced inline `toLocaleString` calls with centralized `formatEUR` utility in asset components
+
+### Fixed
+
+- Fixed typo in assets service: `/reset/v1/assets` → `/rest/v1/assets` in `addAssetToPortfolio`
 
 ## [0.7.0] - 2026-06-02
 

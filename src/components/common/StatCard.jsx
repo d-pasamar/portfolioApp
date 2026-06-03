@@ -5,7 +5,13 @@
  * @param {string} subtext - Texto descriptivo inferior
  * @param {boolean} isLoading - Estado de carga
  */
-export default function StatCard({ title, value, subtext, isLoading = false }) {
+export default function StatCard({
+  title,
+  value,
+  subtext,
+  isLoading = false,
+  valueClassName = "text-black",
+}) {
   return (
     <div className="border border-slate-300 bg-[#f9f9f9] p-6 shadow-sm relative font-mono select-none">
       <div className="absolute top-4 right-4 w-3 h-3 border border-slate-400 bg-white"></div>
@@ -16,7 +22,9 @@ export default function StatCard({ title, value, subtext, isLoading = false }) {
       </span>
 
       {/* Valor Central */}
-      <span className="block text-4xl font-medium text-black mt-4 tracking-tight">
+      <span
+        className={`block text-4xl font-medium mt-4 tracking-tight ${valueClassName}`}
+      >
         {isLoading ? "..." : value}
       </span>
 

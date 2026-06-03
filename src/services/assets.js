@@ -39,7 +39,7 @@ export async function addAssetToPortfolio(portfolioId, asset) {
     last_value_timestamp: asset.last_value_timestamp || null,
   };
 
-  return await fetchSupabase("/reset/v1/assets", {
+  return await fetchSupabase("/rest/v1/assets", {
     method: "POST",
     body: JSON.stringify(body),
   });
