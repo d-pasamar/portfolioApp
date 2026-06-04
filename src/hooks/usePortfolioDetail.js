@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAssetsByPortfolio } from "../services/assets";
 import { getPortfoliosByUser } from "../services/portfolios";
+import {
+  getSyncCost,
+  getLatestPricesBulk,
+  getLatestPrice,
+} from "../services/eodhdClient";
 
 /**
  * Hook para cargar y calcular métricas de una cartera específica.
@@ -70,14 +75,52 @@ export function usePortfolioDetail(portfolioId, user) {
   // === INTERACCIONES / ACCIONES ===
 
   // Botón de sincronización (simulación)
-  const handleSyncPrices = () => {
-    setIsSyncing(true);
-    setTimeout(() => {
-      setIsSyncing(false);
+  const handleSyncPrices = async () => {
+    // 1. Calcular coste antes de gastar
+    const { stale } = getSyncCost(assets);
+
+    if (stale === 0) {
+      alert("Todos los precios están actualizados.");
+      return;
+    }
+
+    // 2. Advertencia al usuario
+    const confirmed = confirm(
+      `Se consumirán ${stale} llamadas a la API de EODHD. ¿Continuar?`,
+    );
+    if (!confirmed) return;
+
+    // 3. Sincronización real
+    try {
+      setIsSyncing(true);
+      const result = await getLatestPricesBulk(assets);
+      await loadData();
+      // Notificar al navbar para que actualice el contador de API calls
+      window.dispatchEvent(new Event("eodhd-sync"));
       alert(
-        "Precios actualizados con la API del mercado de Madrid (Simulado). En el siguiente frente conectaremos el cliente EODHD real.",
+        `Sincronización completada: ${result.updated} actualizados, ${result.fromCache} en caché, ${result.errors} errores.`,
       );
-    }, 1200);
+    } catch (err) {
+      console.error("Error al sincronizar precios:", err);
+      alert("Error al sincronizar los precios.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Sincronización individual de un solo activo (botón 🔄 por fila)
+  const handleSyncSingleAsset = async (assetId) => {
+    const asset = assets.find((a) => a.id === assetId);
+    if (!asset) return;
+
+    try {
+      await getLatestPrice(asset);
+      await loadData();
+      window.dispatchEvent(new Event("eodhd-sync"));
+    } catch (err) {
+      console.error(`Error al sincronizar ${asset.code}:`, err);
+      alert(`No se pudo actualizar el precio de ${asset.code}.`);
+    }
   };
 
   // === CÁLCULOS ECONÓMICOS ===
@@ -92,9 +135,14 @@ export function usePortfolioDetail(portfolioId, user) {
           acc.totalCost += cost;
           acc.totalMarketValue += marketValue;
         }
+
+        // Guardamos el timestamp más reciente de todos los activos
+        if (asset.last_value_timestamp > (acc.lastSyncAt || 0)) {
+          acc.lastSyncAt = asset.last_value_timestamp;
+        }
         return acc;
       },
-      { totalCost: 0, totalMarketValue: 0 },
+      { totalCost: 0, totalMarketValue: 0, lastSyncAt: 0 },
     );
 
     // Rendimiento Total
@@ -110,6 +158,7 @@ export function usePortfolioDetail(portfolioId, user) {
       totalMarketValue: globalMetrics.totalMarketValue,
       globalProfit,
       globalProfitP,
+      lastSyncAt: globalMetrics.lastSyncAt,
     };
   }, [assets]);
 
@@ -121,6 +170,7 @@ export function usePortfolioDetail(portfolioId, user) {
     isLoading,
     isSyncing,
     handleSyncPrices,
+    handleSyncSingleAsset,
     refreshAssets,
   };
 }

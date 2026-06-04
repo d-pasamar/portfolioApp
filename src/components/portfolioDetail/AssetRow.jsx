@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { formatEUR } from "../../utils/format";
- 
+
 /**
  * Fila individual de la tabla de activos de una cartera.
  * Encapsula:
@@ -13,11 +13,17 @@ import { formatEUR } from "../../utils/format";
  * @param {Function} onDelete - Callback del hook useAssetsCRUD → handleDeleteAsset
  * @param {boolean} isUpdating - Estado de carga durante operaciones CRUD
  */
-export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
+export default function AssetRow({
+  asset,
+  onEdit,
+  onDelete,
+  onSyncAsset,
+  isUpdating,
+}) {
   // === ESTADOS DEL MENÚ KEBAB ===
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef();
- 
+
   // Cierre automático del menú al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
@@ -28,51 +34,42 @@ export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
- 
+
   // === CÁLCULOS DE RENDIMIENTO POR FILA ===
   const isWatchlist = asset.quantity === 0 || asset.buy_price === 0;
   const totalCost = asset.quantity * asset.buy_price;
   const totalMarket = asset.quantity * asset.current_price;
   const profit = totalMarket - totalCost;
   const profitP = totalCost > 0 ? (profit / totalCost) * 100 : 0;
- 
+
   // === ACCIONES DEL MENÚ ===
- 
+
   // Editar: prompt temporal para modificar cantidad y precio de compra
   const handleEdit = (e) => {
     e.stopPropagation();
     setIsMenuOpen(false);
- 
-    const newQuantity = prompt(
-      `Cantidad actual de "${asset.name}": ${asset.quantity}\nIntroduce la nueva cantidad:`,
-      asset.quantity,
-    );
- 
-    // Si el usuario cancela el prompt, no hacemos nada
-    if (newQuantity === null) return;
- 
-    const parsed = parseFloat(newQuantity);
-    if (isNaN(parsed) || parsed < 0) {
-      alert("Introduce un número válido.");
-      return;
-    }
- 
-    onEdit(asset.id, { quantity: parsed });
+    onEdit(asset);
   };
- 
+
   // Eliminar: confirmación antes de borrar
   const handleDelete = (e) => {
     e.stopPropagation();
     setIsMenuOpen(false);
- 
+
     const confirmed = confirm(
       `¿Eliminar "${asset.code} — ${asset.name}" de esta cartera?`,
     );
     if (!confirmed) return;
- 
+
     onDelete(asset.id);
   };
- 
+
+  // Sincronizar precio individual de este activo
+  const handleSync = (e) => {
+    e.stopPropagation();
+    onSyncAsset(asset.id);
+  };
+
   return (
     <tr className="hover:bg-slate-50 transition-colors">
       {/* Ticker + Exchange */}
@@ -84,10 +81,10 @@ export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
           </span>
         )}
       </td>
- 
+
       {/* Nombre */}
       <td className="p-4 text-slate-600 font-medium">{asset.name}</td>
- 
+
       {/* Cantidad o badge de seguimiento */}
       <td className="p-4 text-center font-mono text-slate-700 font-semibold">
         {isWatchlist ? (
@@ -98,26 +95,22 @@ export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
           asset.quantity
         )}
       </td>
- 
+
       {/* Precio de Compra */}
       <td className="p-4 text-right font-mono text-slate-500">
-        {isWatchlist
-          ? "-"
-          : `${formatEUR(asset.buy_price)} ${asset.currency}`}
+        {isWatchlist ? "-" : `${formatEUR(asset.buy_price)} ${asset.currency}`}
       </td>
- 
+
       {/* Precio Actual de Mercado */}
       <td className="p-4 text-right font-mono text-slate-700 font-medium">
         {formatEUR(asset.current_price)} {asset.currency}
       </td>
- 
+
       {/* Capital Actual en Mercado */}
       <td className="p-4 text-right font-bold text-black font-mono">
-        {isWatchlist
-          ? "-"
-          : `${formatEUR(totalMarket)} ${asset.currency}`}
+        {isWatchlist ? "-" : `${formatEUR(totalMarket)} ${asset.currency}`}
       </td>
- 
+
       {/* Rendimiento Individual */}
       <td
         className={`p-4 text-center font-bold font-mono text-[11px] ${
@@ -132,9 +125,17 @@ export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
           ? "SEGUIMIENTO"
           : `${profit >= 0 ? "▲" : "▼"} ${profitP.toFixed(2)}%`}
       </td>
- 
+
       {/* Menú Kebab (⋮) — Acciones */}
       <td className="p-4 text-center relative" ref={menuRef}>
+        <button
+          onClick={handleSync}
+          disabled={isUpdating}
+          className="text-slate-400 hover:text-black text-sm leading-none cursor-pointer select-none px-1"
+          title="Sincronizar precio"
+        >
+          🔄
+        </button>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -145,7 +146,7 @@ export default function AssetRow({ asset, onEdit, onDelete, isUpdating }) {
         >
           &#8942;
         </button>
- 
+
         {/* Dropdown flotante */}
         {isMenuOpen && (
           <div className="absolute right-4 top-10 w-36 bg-white border border-slate-300 shadow-md z-10 text-[11px] divide-y divide-slate-100 animate-fadeIn">

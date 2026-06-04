@@ -9,7 +9,13 @@ import AssetRow from "./AssetRow";
  * @param {Function} onDelete - Callback de useAssetsCRUD → handleDeleteAsset
  * @param {boolean} isUpdating - Estado de carga durante operaciones CRUD
  */
-export default function AssetsTable({ assets, onEdit, onDelete, isUpdating }) {
+export default function AssetsTable({
+  assets,
+  onEdit,
+  onDelete,
+  onSyncAsset,
+  isUpdating,
+}) {
   return (
     <div className="border border-slate-300 bg-[#f9f9f9] overflow-visible shadow-sm">
       <table className="w-full text-left text-xs border-collapse">
@@ -44,6 +50,7 @@ export default function AssetsTable({ assets, onEdit, onDelete, isUpdating }) {
               asset={asset}
               onEdit={onEdit}
               onDelete={onDelete}
+              onSyncAsset={onSyncAsset}
               isUpdating={isUpdating}
             />
           ))}

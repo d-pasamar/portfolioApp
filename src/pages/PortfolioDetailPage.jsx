@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { usePortfolioDetail } from "../hooks/usePortfolioDetail";
 import { useAssetsCRUD } from "../hooks/useAssetsCRUD";
 import StatCard from "../components/common/StatCard";
 import AssetsTable from "../components/portfolioDetail/AssetsTable";
+import EditAssetModal from "../components/portfolioDetail/EditAssetModal";
 import { formatEUR } from "../utils/format";
 
 export default function PortfolioDetailPage() {
@@ -18,13 +20,21 @@ export default function PortfolioDetailPage() {
     isLoading,
     isSyncing,
     handleSyncPrices,
+    handleSyncSingleAsset,
     refreshAssets,
   } = usePortfolioDetail(portfolioId, user);
 
   const { handleEditAsset, handleDeleteAsset, isUpdating } =
     useAssetsCRUD(refreshAssets);
 
-  const { totalMarketValue, globalProfit, globalProfitP } = metrics;
+  const { totalMarketValue, globalProfit, globalProfitP, lastSyncAt } = metrics;
+
+  const [assetToEdit, setAssetToEdit] = useState(null);
+
+  const handleConfirmEdit = async (assetId, fields) => {
+    await handleEditAsset(assetId, fields);
+    setAssetToEdit(null);
+  };
 
   return (
     <div className="space-y-10 font-mono select-none animate-fadeIn">
@@ -82,7 +92,11 @@ export default function PortfolioDetailPage() {
             <StatCard
               title="Valor Total de Mercado"
               value={`${formatEUR(totalMarketValue)} EUR`}
-              subtext="Capital en mercado"
+              subtext={
+                lastSyncAt
+                  ? `Última sync: ${new Date(lastSyncAt).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
+                  : "Sin sincronizar"
+              }
               isLoading={isLoading}
             />
             <StatCard
@@ -99,10 +113,20 @@ export default function PortfolioDetailPage() {
           {/* TABLA FINANCIERA */}
           <AssetsTable
             assets={assets}
-            onEdit={handleEditAsset}
+            onEdit={setAssetToEdit}
             onDelete={handleDeleteAsset}
+            onSyncAsset={handleSyncSingleAsset}
             isUpdating={isUpdating}
           />
+
+          {assetToEdit && (
+            <EditAssetModal
+              asset={assetToEdit}
+              onConfirm={handleConfirmEdit}
+              onCancel={() => setAssetToEdit(null)}
+              isUpdating={isUpdating}
+            />
+          )}
         </>
       )}
     </div>

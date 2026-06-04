@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [0.10.0] -2026-06-04
+
+### Added
+
+- Added individual asset price sync button (🔄) in each AssetRow alongside kebab menu
+- Added bulk price sync with cost warning in usePortfolioDetail (replaces simulation)
+- Added last sync timestamp display in portfolio StatCard subtitle
+- Added EODHD API calls counter badge in navbar (auto-refreshes after sync)
+- Added Vite proxy configuration for EODHD API to avoid CORS issues
+- Created `EditAssetModal` component for inline editing of quantity and buy price
+- Added `getLatestPricesBulk` and `getSyncCost` functions to eodhdClient for batch sync
+
+### Changed
+
+- Reduced cache TTL from 24 hours to 5 minutes for more responsive price updates
+- Replaced simulated `handleSyncPrices` with real EODHD bulk sync in usePortfolioDetail
+- Replaced prompt-based asset editing with EditAssetModal component
+- Changed sync timestamp to record moment of user action instead of market timestamp
+
 ## [0.9.0] - 2026-06-03
 
 ### Added

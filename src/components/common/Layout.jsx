@@ -1,8 +1,33 @@
+import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { getApiUsage } from "../../services/eodhdClient";
 
 export default function Layout() {
   const { user, logout, isAdmin } = useAuth();
+
+  // === CONTADOR DE API CALLS ===
+  const [apiCalls, setApiCalls] = useState(null);
+
+  useEffect(() => {
+    async function loadUsage() {
+      try {
+        const data = await getApiUsage();
+        setApiCalls({
+          used: data.apiRequests || 0,
+          limit: data.dailyRateLimit || 20,
+        });
+      } catch (err) {
+        console.error("Error al obtener uso de API:", err);
+      }
+    }
+
+    loadUsage();
+
+    // Recargar cuando cualquier sincronización ocurra
+    window.addEventListener("eodhd-sync", loadUsage);
+    return () => window.removeEventListener("eodhd-sync", loadUsage);
+  }, []);
 
   // Clases comunes para los enlaces de navegación de la barra superior
   const linkClass = ({ isActive }) =>
@@ -54,6 +79,12 @@ export default function Layout() {
           {user && (
             <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
               {user.name || user.email}
+            </span>
+          )}
+
+          {apiCalls && (
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 border border-slate-300 px-2 py-1 bg-white">
+              {apiCalls.used}/{apiCalls.limit} API
             </span>
           )}
 
