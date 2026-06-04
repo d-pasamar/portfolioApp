@@ -15,6 +15,8 @@ and this project follows Semantic Versioning.
 - Admin route `/admin` in AppRouter (tab already conditional via `isAdmin`)
 - Supabase Edge Function `delete-account` using server-side elevated privileges (`service_role`) to safely remove users from `auth.users`.
 - Defensively implemented data format verification (`Array.isArray`) in the catalog synchronization layer.
+- Production deployment on Vercel with `vercel.json` configuration for SPA routing
+- Project README with detailed documentation, architecture overview, and screenshot gallery
 
 ### Fixed
 
