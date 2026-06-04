@@ -107,12 +107,19 @@ export async function signOut() {
 
     console.log("¡Sesión invalidada en el servidor de Supabase!");
   } catch (error) {
-    // Si el token había caducado o fallado, se captura el error para que no se bloquee
-    // el borrado local del token
-    console.warn(
-      "[Auth Service Warning] Error al invalidad token en servidor:",
-      error.message,
-    );
+    // Si el error es porque el usuario ya no existe en el servidor,
+    // significa que venimos de un borrado de cuenta exitoso. No es un error real para la app.
+    if (
+      error.message?.includes("sub claim") ||
+      error.message?.includes("does not exist")
+    ) {
+      console.log("Cierre de sesión local completado tras borrado de cuenta.");
+    } else {
+      console.warn(
+        "[Auth Service Warning] Error al invalidar token en servidor:",
+        error.message,
+      );
+    }
   } finally {
     // 2. Ocurre tanto si la petición tuvo éxito o fallo
     // se elimina el token de localStorage

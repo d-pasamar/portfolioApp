@@ -5,7 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
-## [0.10.0] -2026-06-04
+## [0.11.0] - 2026-06-04
+
+### Added
+
+- `ProfilePage` with editable name field and read-only fields (email, role, member since)
+- `services/users.js` with `updateUserName` and `deleteUserAccount` functions
+- `useProfile` hook encapsulating profile edit and account deletion logic
+- Danger zone section with account deletion via Supabase Edge Function (`delete-account`)
+- `formatDate` utility in `format.js` for formatting arbitrary date strings
+
+### Changed
+
+- `deleteUserAccount` now calls Edge Function `/functions/v1/delete-account` instead of direct REST delete, enabling proper `auth.users` cleanup with CASCADE
+
+## [0.10.0] - 2026-06-04
 
 ### Added
 
