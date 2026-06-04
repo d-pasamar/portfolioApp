@@ -10,7 +10,6 @@ Proyecto desarrollado como parte de la asignatura de 2º DAM (Desarrollo de Apli
 
 ## Capturas de pantalla
 
-
 | Vista                       | Captura                                                |
 | --------------------------- | ------------------------------------------------------ |
 | **Dashboard**               | ![Dashboard](./docs/screenshots/dashboard.png)         |
@@ -22,6 +21,13 @@ Proyecto desarrollado como parte de la asignatura de 2º DAM (Desarrollo de Apli
 | **Login**                   | ![Login](./docs/screenshots/login.png)                 |
 | **Registro**                | ![Registro](./docs/screenshots/register.png)           |
 
+---
+
+## Diseño UI
+
+El diseño de la interfaz se realizó en Figma antes de la implementación:
+
+🔗 [Ver diseño en Figma](https://www.figma.com/proto/qv3rsTSbKIl1PHmhmaaRYr/Prototipo?node-id=2-7&starting-point-node-id=2%3A7&t=yjkkbKKEnPK01HbB-1)
 
 ---
 
