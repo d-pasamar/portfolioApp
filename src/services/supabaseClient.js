@@ -35,8 +35,12 @@ export async function fetchSupabase(endpoint, options = {}) {
       return null;
     }
 
+    // 7. Leemos la respuesta como texto primero para verificar si está vacía
+    const textData = await response.text();
+    const data = textData ? JSON.parse(textData) : null;
+
     // 7. Se parsea la respuesta a JSON
-    const data = await response.json();
+    // const data = await response.json();
 
     // console.log("Respuesta completa de Supabase:", data);
 

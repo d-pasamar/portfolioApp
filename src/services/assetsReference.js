@@ -76,7 +76,10 @@ export async function fetchExternalAssets(exchange = "MC") {
  * @returns {Promise<void>}
  */
 export async function syncAssetsReference(rawAssets, exchange = "MC") {
-  if (!rawAssets || rawAssets.length === 0) return;
+  if (!rawAssets || !Array.isArray(rawAssets) || rawAssets.length === 0) {
+    console.error("syncAssetsReference esperada un Array, recibió:", rawAssets);
+    return;
+  }
 
   // === NORMALIZACIÓN ===
   // EODHD devuelve campos en PascalCase → los mapeamos a las columnas de Supabase (lowercase)
@@ -98,7 +101,7 @@ export async function syncAssetsReference(rawAssets, exchange = "MC") {
   for (let i = 0; i < normalized.length; i += BATCH_SIZE) {
     const batch = normalized.slice(i, i + BATCH_SIZE);
 
-    await fetchSupabase("/rest/v1/assets_reference", {
+    await fetchSupabase("/rest/v1/assets_reference?on_conflict=code,exchange", {
       method: "POST",
       headers: {
         // resolution=merge-duplicates → si ya existe (por code+exchange), actualiza los demás campos

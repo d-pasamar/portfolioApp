@@ -3,6 +3,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import Layout from "../components/common/Layout";
 
 // Importación de Páginas
+import AdminPage from "../pages/AdminPage";
 import DashboardPage from "../pages/DashboardPage";
 import LoginPage from "../pages/LoginPage";
 import MarketSearchPage from "../pages/MarketSearchPage";
@@ -33,6 +34,7 @@ export default function AppRouter() {
           <Route path="/portfolios/:id" element={<PortfolioDetailPage />} />
           <Route path="/market" element={<MarketSearchPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Route>
 
         {/* Redirección por defecto */}

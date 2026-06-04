@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [0.12.0] - 2026-06-04
+
+### Added
+
+- `AdminPage` with catalog sync panel and sync history table
+- `useAdmin` hook encapsulating sync orchestration and log loading
+- Free-text exchange input for syncing any market (MC, US, LSE, PA...)
+- Admin route `/admin` in AppRouter (tab already conditional via `isAdmin`)
+- Supabase Edge Function `delete-account` using server-side elevated privileges (`service_role`) to safely remove users from `auth.users`.
+- Defensively implemented data format verification (`Array.isArray`) in the catalog synchronization layer.
+
+### Fixed
+
+- Fixed reference integrity bug during user self-deletion by altering database tables (`users`, `portfolios`, `assets`) to use `ON DELETE CASCADE` constrained to Supabase Auth.
+- Resolved API payload mismatch in `useAdmin` by reordering inverted parameters passed to `syncAssetsReference`.
+- Fixed SQL `duplicate key` conflict (HTTP 409) during catalog updates by appending the `on_conflict=code,exchange` criteria to the PostgREST URL.
+- Resolved JSON parsing crash (`Unexpected end of JSON input`) in `supabaseClient.js` by standardizing response reading as text before payload parsing to gracefully handle empty HTTP responses (`return=minimal`).
+
 ## [0.11.0] - 2026-06-04
 
 ### Added
