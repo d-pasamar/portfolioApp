@@ -23,7 +23,7 @@ export default function StatCard({
 
       {/* Valor Central */}
       <span
-        className={`block text-4xl font-medium mt-4 tracking-tight ${valueClassName}`}
+        className={`block text-2xl sm:text-4xl font-medium mt-4 tracking-tight ${valueClassName}`}
       >
         {isLoading ? "..." : value}
       </span>
