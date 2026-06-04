@@ -14,7 +14,7 @@
  */
 export default function MarketSearchResultsTable({ results, onAdd }) {
   return (
-    <div className="border border-slate-300 bg-[#f9f9f9] overflow-visible shadow-sm">
+    <div className="border border-slate-300 bg-[#f9f9f9] overflow-x-auto shadow-sm">
       <table className="w-full text-left text-xs border-collapse">
         <thead>
           <tr className="border-b border-slate-300 bg-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">

@@ -82,7 +82,7 @@ export default function AdminPage() {
       </div>
 
       {/* HISTORIAL DE SINCRONIZACIONES */}
-      <div className="border border-slate-300 bg-[#f9f9f9] shadow-sm">
+      <div className="border border-slate-300 bg-[#f9f9f9] overflow-x-auto shadow-sm">
         <div className="p-6 border-b border-slate-200">
           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             Historial de Sincronizaciones

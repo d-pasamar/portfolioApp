@@ -60,7 +60,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="border border-slate-300 bg-[#f9f9f9] overflow-hidden shadow-sm">
+        <div className="border border-slate-300 bg-[#f9f9f9] overflow-x-auto shadow-sm">
           {isLoading ? (
             <div className="p-8 text-center text-xs text-slate-500">
               Sincronizando hilos asíncronos en paralelo...
