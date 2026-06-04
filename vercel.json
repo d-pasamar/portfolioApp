@@ -3,6 +3,10 @@
     {
       "source": "/eodhd/:path*",
       "destination": "https://eodhd.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
