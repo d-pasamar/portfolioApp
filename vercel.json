@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/eodhd/:path*",
+      "destination": "https://eodhd.com/:path*"
+    }
+  ]
+}
