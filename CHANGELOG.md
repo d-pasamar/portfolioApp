@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog
 and this project follows Semantic Versioning.
 
+## [0.13.0] - 2026-06-04
+
+### Added
+
+- Responsive hamburger menu in `Layout` for mobile viewports (`< 768px`)
+- Mobile navigation panel with full-width links and user info section
+- Animated hamburger-to-X icon transition via CSS transforms
+
+### Changed
+
+- Split Layout header into desktop (horizontal navbar) and mobile (collapsible panel) using `md:` breakpoint
+- Navigation links auto-close mobile menu on route change
+
 ## [0.12.0] - 2026-06-04
 
 ### Added
