@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
+import AdminRoute from "../components/AdminRoute";
 import Layout from "../components/common/Layout";
 
 // Importación de Páginas
@@ -34,7 +35,14 @@ export default function AppRouter() {
           <Route path="/portfolios/:id" element={<PortfolioDetailPage />} />
           <Route path="/market" element={<MarketSearchPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            }
+          />
         </Route>
 
         {/* Redirección por defecto */}
